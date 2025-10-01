@@ -1,0 +1,45 @@
+# Binaries
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+*.test
+*.out
+
+# Go build output
+bin/
+build/
+dist/
+
+# Vendor
+/vendor/
+
+# Logs
+*.log
+
+# OS-specific
+.DS_Store
+Thumbs.db
+
+# IDE / Editor
+.idea/
+.vscode/
+*.swp
+
+# Dependency / Module cache
+/go.sum
+/go.work
+/go.work.sum
+
+# Environment / Secrets
+.env
+.env.*
+config.yaml
+config.local.yaml
+
+# Coverage / Testing
+*.cover
+*.coverprofile
+*.prof
+
