@@ -1,9 +1,9 @@
 package utils
 
 import (
+	"errors"
 	"time"
 
-	"github.com/goccy/go-yaml/internal/errors"
 	"github.com/golang-jwt/jwt/v5"
 )
 
@@ -27,7 +27,7 @@ func VerifyToken(token string) error {
 			return nil, errors.New("Unexpected signing method.")
 		}
 
-		return secretKey, nil
+		return []byte(secretKey), nil
 	})
 
 	if err != nil {
