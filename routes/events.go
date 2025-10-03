@@ -3,6 +3,7 @@ package routes
 import (
 	"net/http"
 	"strconv"
+	"strings"
 
 	"example.com/go-rest/models"
 	"example.com/go-rest/utils"
@@ -38,14 +39,18 @@ func getEvent(context *gin.Context) {
 }
 
 func createEvent(context *gin.Context) {
-	token := context.Request.Header.Get("Authorization")
+	auth := context.Request.Header.Get("Authorization")
 
-	if token == "" {
+	if auth == "" {
 		context.JSON(http.StatusUnauthorized, gin.H{"message": "Not authorized."})
 		return
 	}
 
-	err := utils.VerifyToken(token)
+	// Sanitize the received token
+	token := strings.TrimSpace(auth)
+	token = strings.Trim(token, `"'`)
+
+	userId, err := utils.VerifyToken(token)
 
 	if err != nil {
 		context.JSON(http.StatusUnauthorized, gin.H{"message": "Not authorized."})
@@ -60,7 +65,7 @@ func createEvent(context *gin.Context) {
 		return
 	}
 
-	event.UserID = 1
+	event.UserID = userId
 
 	err = event.Save()
 
