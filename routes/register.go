@@ -53,6 +53,6 @@ func cancelRegistration(context *gin.Context) {
 		return
 	}
 
-	context.JSON(http.StatusCreated, gin.H{"message": "Cancelled Registration!"})
+	context.JSON(http.StatusOK, gin.H{"message": "Cancelled Registration!"})
 
 }
