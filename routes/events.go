@@ -23,8 +23,6 @@ const (
 	msgEventCreated = "Event created!"
 	msgEventUpdated = "Event updated!"
 	msgEventDeleted = "Event deleted!"
-
-	idParameter = "id"
 )
 
 func getEvents(context *gin.Context) {
@@ -38,7 +36,7 @@ func getEvents(context *gin.Context) {
 }
 
 func getEvent(context *gin.Context) {
-	eventId, err := utils.ParseInt64(context.Param(idParameter))
+	eventId, err := utils.ParseInt64(context.Param(constants.ID))
 
 	if err != nil {
 		context.JSON(http.StatusBadRequest, gin.H{"message": msgParseEventID})
@@ -78,7 +76,7 @@ func createEvent(context *gin.Context) {
 }
 
 func updateEvent(context *gin.Context) {
-	eventId, err := utils.ParseInt64(context.Param(idParameter))
+	eventId, err := utils.ParseInt64(context.Param(constants.ID))
 
 	if err != nil {
 		context.JSON(http.StatusBadRequest, gin.H{"message": msgParseEventID})
@@ -118,7 +116,7 @@ func updateEvent(context *gin.Context) {
 }
 
 func deleteEvent(context *gin.Context) {
-	eventId, err := utils.ParseInt64(context.Param(idParameter))
+	eventId, err := utils.ParseInt64(context.Param(constants.ID))
 
 	if err != nil {
 		context.JSON(http.StatusBadRequest, gin.H{"message": msgParseEventID})
