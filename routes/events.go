@@ -2,9 +2,10 @@ package routes
 
 import (
 	"net/http"
-	"strconv"
 
+	"example.com/go-rest/constants"
 	"example.com/go-rest/models"
+	"example.com/go-rest/utils"
 	"github.com/gin-gonic/gin"
 )
 
@@ -22,6 +23,8 @@ const (
 	msgEventCreated = "Event created!"
 	msgEventUpdated = "Event updated!"
 	msgEventDeleted = "Event deleted!"
+
+	idParameter = "id"
 )
 
 func getEvents(context *gin.Context) {
@@ -35,7 +38,7 @@ func getEvents(context *gin.Context) {
 }
 
 func getEvent(context *gin.Context) {
-	eventId, err := strconv.ParseInt(context.Param("id"), 10, 64)
+	eventId, err := utils.ParseInt64(context.Param(idParameter))
 
 	if err != nil {
 		context.JSON(http.StatusBadRequest, gin.H{"message": msgParseEventID})
@@ -62,7 +65,7 @@ func createEvent(context *gin.Context) {
 		return
 	}
 
-	event.UserID = context.GetInt64("userId")
+	event.UserID = context.GetInt64(constants.ContextUserID)
 
 	err = event.Save()
 
@@ -75,14 +78,14 @@ func createEvent(context *gin.Context) {
 }
 
 func updateEvent(context *gin.Context) {
-	eventId, err := strconv.ParseInt(context.Param("id"), 10, 64)
+	eventId, err := utils.ParseInt64(context.Param(idParameter))
 
 	if err != nil {
 		context.JSON(http.StatusBadRequest, gin.H{"message": msgParseEventID})
 		return
 	}
 
-	userId := context.GetInt64("userId")
+	userId := context.GetInt64(constants.ContextUserID)
 	event, err := models.GetEventById(eventId)
 
 	if err != nil {
@@ -115,14 +118,14 @@ func updateEvent(context *gin.Context) {
 }
 
 func deleteEvent(context *gin.Context) {
-	eventId, err := strconv.ParseInt(context.Param("id"), 10, 64)
+	eventId, err := utils.ParseInt64(context.Param(idParameter))
 
 	if err != nil {
 		context.JSON(http.StatusBadRequest, gin.H{"message": msgParseEventID})
 		return
 	}
 
-	userId := context.GetInt64("userId")
+	userId := context.GetInt64(constants.ContextUserID)
 	event, err := models.GetEventById(eventId)
 
 	if err != nil {
