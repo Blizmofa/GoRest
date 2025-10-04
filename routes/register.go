@@ -39,7 +39,7 @@ func registerForEvent(context *gin.Context) {
 		return
 	}
 
-	context.JSON(http.StatusCreated, gin.H{"message": msgRegisterEvent})
+	context.JSON(http.StatusCreated, gin.H{"message": msgRegisteredOK})
 }
 
 func cancelRegistration(context *gin.Context) {
@@ -57,7 +57,7 @@ func cancelRegistration(context *gin.Context) {
 	err = event.CancelRegistration(userId)
 
 	if err != nil {
-		context.JSON(http.StatusInternalServerError, gin.H{"message": msgParseEventID})
+		context.JSON(http.StatusInternalServerError, gin.H{"message": msgCancelRegistration})
 		return
 	}
 
