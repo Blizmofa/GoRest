@@ -13,16 +13,12 @@ type User struct {
 	Password string `binding:"required"`
 }
 
+const (
+	sqlInsertUser        = `INSERT INTO users(email, password) VALUES (?, ?)`
+	sqlSelectUserByEmail = `SELECT id, password FROM users WHERE email = ?`
+)
+
 func (user *User) Save() error {
-	query := "INSERT INTO users(email, password) VALUES (?, ?)"
-
-	statement, err := db.DB.Prepare(query)
-
-	if err != nil {
-		return err
-	}
-
-	defer statement.Close()
 
 	hashedPassword, err := utils.HashPassword(user.Password)
 
@@ -30,8 +26,7 @@ func (user *User) Save() error {
 		return err
 	}
 
-	result, err := statement.Exec(user.Email, hashedPassword)
-
+	result, err := db.ExecStatement(sqlInsertUser, user.Email, hashedPassword)
 	if err != nil {
 		return err
 	}
@@ -42,8 +37,8 @@ func (user *User) Save() error {
 }
 
 func (user *User) ValidateCredentials() error {
-	query := "SELECT id, password FROM users WHERE email = ?"
-	row := db.DB.QueryRow(query, user.Email)
+
+	row := db.DB.QueryRow(sqlSelectUserByEmail, user.Email)
 
 	var retrievedPassword string
 	err := row.Scan(&user.ID, &retrievedPassword)
