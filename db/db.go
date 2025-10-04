@@ -2,6 +2,7 @@ package db
 
 import (
 	"database/sql"
+	"fmt"
 	"log"
 
 	_ "modernc.org/sqlite"
@@ -65,4 +66,19 @@ func createTable(tableQuery string) {
 	if err != nil {
 		log.Fatalf("Could not create table: %v", err.Error())
 	}
+}
+
+func ExecStatement(query string, args ...any) (sql.Result, error) {
+	stmt, err := DB.Prepare(query)
+	if err != nil {
+		return nil, fmt.Errorf("prepare statement: %w", err)
+	}
+
+	defer stmt.Close()
+
+	res, err := stmt.Exec(args...)
+	if err != nil {
+		return nil, fmt.Errorf("exec statement: %w", err)
+	}
+	return res, nil
 }

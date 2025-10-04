@@ -15,21 +15,35 @@ type Event struct {
 	UserID      int64
 }
 
-var events []Event = []Event{}
+const (
+	sqlInsertEvent = `
+		INSERT INTO events(name, description, location, dateTime, user_id)
+		VALUES (?, ?, ?, ?, ?)`
+
+	sqlSelectAllEvents = `
+		SELECT * FROM events`
+
+	sqlSelectEventByID = `
+		SELECT * FROM events WHERE id = ?`
+
+	sqlUpdateEventByID = `
+		UPDATE events
+		SET name = ?, description = ?, location = ?, dateTime = ?
+		WHERE id = ?`
+
+	sqlDeleteEventByID = `
+		DELETE FROM events WHERE id = ?`
+
+	sqlInsertRegistration = `
+		INSERT INTO registrations(event_id, user_id) VALUES (?, ?)`
+
+	sqlDeleteRegistration = `
+		DELETE FROM registrations WHERE event_id = ? AND user_id = ?`
+)
 
 func (event *Event) Save() error {
-	query := `
-	INSERT INTO events(name, description, location, dateTime, user_id) 
-	VALUES (?, ?, ?, ?, ?)`
-	statement, err := db.DB.Prepare(query)
 
-	if err != nil {
-		return err
-	}
-
-	defer statement.Close()
-
-	result, err := statement.Exec(event.Name, event.Description, event.Location, event.DateTime, event.UserID)
+	result, err := db.ExecStatement(sqlInsertEvent, event.Name, event.Description, event.Location, event.DateTime, event.UserID)
 
 	if err != nil {
 		return err
@@ -41,8 +55,8 @@ func (event *Event) Save() error {
 }
 
 func GetAllEvents() ([]Event, error) {
-	query := "SELECT * FROM events"
-	rows, err := db.DB.Query(query)
+
+	rows, err := db.DB.Query(sqlSelectAllEvents)
 
 	if err != nil {
 		return nil, err
@@ -66,8 +80,8 @@ func GetAllEvents() ([]Event, error) {
 }
 
 func GetEventById(id int64) (*Event, error) {
-	query := "SELECT * FROM events WHERE id = ?"
-	row := db.DB.QueryRow(query, id)
+
+	row := db.DB.QueryRow(sqlSelectEventByID, id)
 
 	var event Event
 	err := row.Scan(&event.ID, &event.Name, &event.Description, &event.Location, &event.DateTime, &event.UserID)
@@ -80,69 +94,25 @@ func GetEventById(id int64) (*Event, error) {
 }
 
 func (event *Event) Update() error {
-	query := `
-	UPDATE events
-	SET name = ?, description = ?, location = ?, dateTime = ?
-	WHERE id = ?
-	`
-
-	statement, err := db.DB.Prepare(query)
-
-	if err != nil {
-		return err
-	}
-
-	defer statement.Close()
-
-	_, err = statement.Exec(event.Name, event.Description, event.Location, event.DateTime, event.ID)
+	_, err := db.ExecStatement(sqlUpdateEventByID, event.Name, event.Description, event.Location, event.DateTime, event.ID)
 
 	return err
 }
 
 func (event *Event) Delete() error {
-	query := "DELETE FROM events WHERE id = ?"
 
-	statement, err := db.DB.Prepare(query)
-
-	if err != nil {
-		return err
-	}
-
-	defer statement.Close()
-
-	_, err = statement.Exec(event.ID)
-
+	_, err := db.ExecStatement(sqlDeleteEventByID, event.ID)
 	return err
 }
 
 func (event *Event) Register(userId int64) error {
-	query := "INSERT INTO registrations(event_id, user_id) VALUES (?, ?)"
 
-	statement, err := db.DB.Prepare(query)
-
-	if err != nil {
-		return err
-	}
-
-	defer statement.Close()
-
-	_, err = statement.Exec(event.ID, userId)
-
+	_, err := db.ExecStatement(sqlInsertRegistration, event.ID, userId)
 	return err
 }
 
 func (event *Event) CancelRegistration(userId int64) error {
-	query := "DELETE FROM registrations WHERE event_id = ? AND user_id = ?"
 
-	statement, err := db.DB.Prepare(query)
-
-	if err != nil {
-		return err
-	}
-
-	defer statement.Close()
-
-	_, err = statement.Exec(event.ID, userId)
-
+	_, err := db.ExecStatement(sqlDeleteRegistration, event.ID, userId)
 	return err
 }
