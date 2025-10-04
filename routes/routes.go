@@ -5,18 +5,26 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+const (
+	pathEvents          = "/events"
+	pathEventByID       = "/events/:id"
+	pathRegisterByEvent = "/events/:id/register"
+	pathSignup          = "/signup"
+	pathLogin           = "/login"
+)
+
 func RegisterRoutes(server *gin.Engine) {
-	server.GET("/events", getEvents)
-	server.GET("/events/:id", getEvent)
+	server.GET(pathEvents, getEvents)
+	server.GET(pathEventByID, getEvent)
 
 	authenticated := server.Group("/")
 	authenticated.Use(middlewares.Authenticate)
-	authenticated.POST("/events", createEvent)
-	authenticated.PUT("/events/:id", updateEvent)
-	authenticated.DELETE("/events/:id", deleteEvent)
-	authenticated.POST("/events/:id/register", registerForEvent)
-	authenticated.DELETE("/events/:id/register", cancelRegistration)
+	authenticated.POST(pathEvents, createEvent)
+	authenticated.PUT(pathEventByID, updateEvent)
+	authenticated.DELETE(pathEventByID, deleteEvent)
+	authenticated.POST(pathRegisterByEvent, registerForEvent)
+	authenticated.DELETE(pathRegisterByEvent, cancelRegistration)
 
-	server.POST("/signup", signUp)
-	server.POST("/login", login)
+	server.POST(pathSignup, signUp)
+	server.POST(pathLogin, login)
 }
