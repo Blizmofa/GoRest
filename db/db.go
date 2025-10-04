@@ -37,18 +37,22 @@ const (
 		FOREIGN KEY(event_id) REFERENCES events(id),
 		FOREIGN KEY(user_id) REFERENCES users(id)
 	);`
+
+	defaultDBPath        = "api.db"
+	maxOpenedConnections = 10
+	maxIdleConnections   = 5
 )
 
 func InitDB() {
 	var err error
-	DB, err = sql.Open("sqlite", "api.db")
+	DB, err = sql.Open("sqlite", defaultDBPath)
 
 	if err != nil {
 		log.Fatalf("Could not connect to database: %v", err.Error())
 	}
 
-	DB.SetMaxOpenConns(10)
-	DB.SetMaxIdleConns(5)
+	DB.SetMaxOpenConns(maxOpenedConnections)
+	DB.SetMaxIdleConns(maxIdleConnections)
 
 	createTable(createUsersTable)
 	createTable(createEventsTable)
