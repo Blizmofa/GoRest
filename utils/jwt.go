@@ -4,6 +4,7 @@ import (
 	"errors"
 	"time"
 
+	"example.com/go-rest/constants"
 	"github.com/golang-jwt/jwt/v5"
 )
 
@@ -11,9 +12,9 @@ const secretKey = "superSecretKey"
 
 func GenerateToken(email string, userId int64) (string, error) {
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
-		"email":  email,
-		"userId": userId,
-		"exp":    time.Now().Add(time.Hour * 2).Unix(),
+		"email":                 email,
+		constants.ContextUserID: userId,
+		"exp":                   time.Now().Add(time.Hour * 2).Unix(),
 	})
 
 	return token.SignedString([]byte(secretKey))
@@ -44,7 +45,7 @@ func VerifyToken(token string) (int64, error) {
 		return 0, errors.New("Invalid token claims.")
 	}
 
-	userId := int64(claims["userId"].(float64))
+	userId := int64(claims[constants.ContextUserID].(float64))
 
 	return userId, nil
 }
