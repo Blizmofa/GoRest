@@ -8,22 +8,29 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+const (
+	msgSaveUserFailed = "Could not save user."
+	msgUserCreated    = "User created!"
+	msgAuthFailed     = "Could not authenticate user."
+	msgUserLoggedIn   = "User Logged in!"
+)
+
 func signUp(context *gin.Context) {
 	var user models.User
 	err := context.ShouldBindJSON(&user)
 
 	if err != nil {
-		context.JSON(http.StatusBadRequest, gin.H{"message": "Could not parse request data."})
+		context.JSON(http.StatusBadRequest, gin.H{"message": msgParseRequestData})
 		return
 	}
 
 	err = user.Save()
 	if err != nil {
-		context.JSON(http.StatusInternalServerError, gin.H{"message": "Could not save user."})
+		context.JSON(http.StatusInternalServerError, gin.H{"message": msgSaveUserFailed})
 		return
 	}
 
-	context.JSON(http.StatusCreated, gin.H{"message": "User created!"})
+	context.JSON(http.StatusCreated, gin.H{"message": msgUserCreated})
 }
 
 func login(context *gin.Context) {
@@ -32,7 +39,7 @@ func login(context *gin.Context) {
 	err := context.ShouldBindJSON(&user)
 
 	if err != nil {
-		context.JSON(http.StatusBadRequest, gin.H{"message": "Could not parse request data."})
+		context.JSON(http.StatusBadRequest, gin.H{"message": msgParseRequestData})
 		return
 	}
 
@@ -46,10 +53,10 @@ func login(context *gin.Context) {
 	token, err := utils.GenerateToken(user.Email, user.ID)
 
 	if err != nil {
-		context.JSON(http.StatusInternalServerError, gin.H{"message": "Could not authenticate user."})
+		context.JSON(http.StatusInternalServerError, gin.H{"message": msgAuthFailed})
 		return
 	}
 
-	context.JSON(http.StatusOK, gin.H{"message": "User Logged in!", "token": token})
+	context.JSON(http.StatusOK, gin.H{"message": msgUserLoggedIn, "token": token})
 
 }
